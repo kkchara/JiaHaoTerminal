@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>JIAHAO // SYSTEM BREACH</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;overflow:hidden;background:#000;cursor:none}
+  body{font-family:Consolas,"Cascadia Mono","Courier New",monospace}
+  canvas{position:fixed;inset:0;display:block;z-index:1}
+  #vignette{position:fixed;inset:0;z-index:2;pointer-events:none;
+    background:radial-gradient(ellipse at center,rgba(0,0,0,0) 30%,rgba(0,0,0,.55) 78%,rgba(0,0,0,.92) 100%)}
+  #scanlines{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.35;
+    background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.45) 2px 4px)}
+  #sweep{position:fixed;left:0;width:100%;height:140px;z-index:4;pointer-events:none;
+    background:linear-gradient(to bottom,rgba(0,255,140,0),rgba(0,255,140,.07),rgba(0,255,140,0));
+    animation:sweep 7s linear infinite}
+  @keyframes sweep{from{top:-140px}to{top:100%}}
+
+  /* ================= 终端窗口 ================= */
+  #win{
+    position:fixed;z-index:6;left:50%;top:50%;transform:translate(-50%,-50%) scale(.92);
+    width:min(1120px,90vw);height:min(700px,80vh);display:flex;flex-direction:column;
+    background:rgba(0,10,6,.82);border:1px solid rgba(0,255,140,.45);border-radius:8px;
+    box-shadow:0 0 0 1px rgba(0,255,140,.12),0 0 45px rgba(0,255,140,.22),0 0 120px rgba(0,255,140,.10),inset 0 0 90px rgba(0,255,140,.05);
+    backdrop-filter:blur(2px);opacity:0;transition:opacity .5s ease,transform .5s cubic-bezier(.2,1.4,.4,1)}
+  #win.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  #bar{display:flex;align-items:center;gap:10px;height:38px;padding:0 12px;flex:none;
+    background:linear-gradient(rgba(0,255,140,.16),rgba(0,255,140,.05));
+    border-bottom:1px solid rgba(0,255,140,.35);border-radius:7px 7px 0 0}
+  .dot{width:12px;height:12px;border-radius:50%}
+  .r{background:#ff5f57}.y{background:#febc2e}.g{background:#28c840}
+  #title{flex:1;text-align:center;font-size:12.5px;letter-spacing:2px;color:#8affc1;text-shadow:0 0 8px rgba(0,255,140,.8)}
+  #tabs{display:flex;align-items:center;gap:8px;height:26px;padding:0 12px;flex:none;font-size:11.5px;color:#3f8f66;
+    border-bottom:1px solid rgba(0,255,140,.18);background:rgba(0,255,140,.03)}
+  #tabs .tab{color:#8affc1;border-bottom:1px solid #8affc1;padding-bottom:2px}
+  #body{flex:1;display:flex;min-height:0}
+  #term{flex:1;padding:10px 14px;overflow:hidden;font-size:13px;line-height:1.45;
+    color:#7dffb0;text-shadow:0 0 6px rgba(0,255,140,.45);white-space:pre-wrap;word-break:break-all}
+  #side{width:238px;flex:none;border-left:1px solid rgba(0,255,140,.25);padding:10px;font-size:11.5px;
+    color:#4fd693;display:flex;flex-direction:column;gap:10px;background:rgba(0,255,140,.02)}
+  .pt{color:#2f7a55;letter-spacing:1px;font-size:10.5px;margin-bottom:4px}
+  .bar{height:6px;background:rgba(0,255,140,.12);border-radius:3px;overflow:hidden;margin:3px 0 7px}
+  .bar>i{display:block;height:100%;width:0;background:#39ff9e;box-shadow:0 0 10px #39ff9e;transition:width .25s linear}
+  .kv{display:flex;justify-content:space-between}
+  #keys{color:#2f7a55;font-size:10.5px;margin-top:auto;line-height:1.6}
+  .cur{display:inline-block;width:8px;height:15px;background:#8affc1;vertical-align:-2px;box-shadow:0 0 10px #39ff9e;animation:bl .9s steps(1) infinite}
+  @keyframes bl{50%{opacity:0}}
+  /* 终端里的大字标题（比 ASCII art 稳：不受等宽字体缺字影响） */
+  .big{display:inline-block;line-height:1.15;font-size:clamp(26px,3.4vw,46px);font-weight:900;
+    letter-spacing:4px;color:#eafff3;text-shadow:0 0 10px #39ff9e,0 0 30px #00ff88,0 0 62px #00ff88}
+  .big.pro{margin-left:12px;padding:2px 12px 4px;border-radius:5px;color:#03150c;background:#39ff9e;
+    box-shadow:0 0 26px #39ff9e,0 0 60px rgba(0,255,136,.5);text-shadow:none;letter-spacing:3px}
+  .sub{color:#2f7a55;font-size:12px;letter-spacing:1.5px}
+  .rec{color:#ff5f57;animation:bl 1.4s steps(1) infinite}
+  .ok{color:#39ff9e}.warn{color:#ffd166}.bad{color:#ff5f57}.dim{color:#2f7a55}.hi{color:#d8ffe9;text-shadow:0 0 12px #39ff9e}
+
+  /* ================= 屏幕特效 ================= */
+  #glitch{position:fixed;inset:0;z-index:7;pointer-events:none;opacity:0;
+    background:linear-gradient(90deg,rgba(255,0,60,.35),rgba(0,255,255,.28),rgba(0,255,140,.32));
+    mix-blend-mode:screen}
+  #glitch.on{animation:gl .34s steps(2) 5}
+  @keyframes gl{0%{opacity:.85;transform:translateX(-9px)}50%{opacity:.35;transform:translateX(7px)}100%{opacity:.7;transform:translateX(-3px)}}
+  #flash{position:fixed;inset:0;z-index:8;pointer-events:none;background:#c9ffe4;opacity:0}
+  #flash.on{animation:fl .5s ease-out}
+  @keyframes fl{0%{opacity:.9}100%{opacity:0}}
+  #banner{position:fixed;z-index:9;left:50%;top:16%;transform:translate(-50%,-50%) scale(.7);
+    font-size:clamp(28px,6.4vw,92px);font-weight:900;letter-spacing:6px;color:#eafff3;
+    text-shadow:0 0 14px #39ff9e,0 0 44px #00ff88,0 0 90px #00ff88,3px 0 0 rgba(255,0,80,.85),-3px 0 0 rgba(0,220,255,.85);
+    opacity:0;pointer-events:none;white-space:nowrap}
+  #banner.on{animation:bn 3.4s cubic-bezier(.2,1.5,.3,1) forwards}
+  @keyframes bn{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.6);filter:blur(8px)}
+    12%{opacity:1;transform:translate(-50%,-50%) scale(1.06);filter:blur(0)}
+    18%{transform:translate(-51.5%,-50%) scale(1)}
+    22%{transform:translate(-48.5%,-50%) scale(1.02)}
+    26%{transform:translate(-50%,-50%) scale(1)}
+    78%{opacity:1}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(1.12);filter:blur(4px)}}
+  #hud{position:fixed;z-index:6;left:0;right:0;font-size:11.5px;color:#39ff9e;letter-spacing:1.5px;
+    text-shadow:0 0 8px rgba(0,255,140,.7);opacity:0;transition:opacity .8s;pointer-events:none}
+  #hud.on{opacity:.85}
+  #hud.top{top:auto;bottom:11px;padding:0 18px;display:flex;justify-content:space-between;align-items:center;gap:18px}
+  #hudC{color:#3f8f66}
+  #hudR{color:#8affc1}
+  #hud.top::before{content:"";position:absolute;left:0;right:0;bottom:-9px;height:26px;z-index:-1;
+    background:linear-gradient(to top,rgba(0,0,0,.85),rgba(0,0,0,0))}
+  #boot{position:fixed;z-index:10;inset:0;background:#000;color:#39ff9e;padding:6vh 6vw;font-size:13.5px;
+    line-height:1.7;text-shadow:0 0 8px rgba(0,255,140,.5);white-space:pre-wrap}
+  #boot.gone{display:none}
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+<div id="vignette"></div>
+<div id="scanlines"></div>
+<div id="sweep"></div>
+
+<div id="boot"></div>
+
+<div id="hud" class="top"><span id="hudL">● REC &nbsp; JIAHAO-NET // NODE 07</span><span id="hudC">UPLINK ENCRYPTED · AES-256-GCM</span><span id="hudR">--:--:--</span></div>
+
+<div id="win">
+  <div id="bar">
+    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <span id="title">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</span>
+    <span style="width:54px"></span>
+  </div>
+  <div id="tabs"><span class="tab">Windows PowerShell</span><span>+</span><span style="margin-left:auto" id="pidTxt">PID 1337</span></div>
+  <div id="body">
+    <div id="term"></div>
+    <div id="side">
+      <div>
+        <div class="pt">CPU LOAD</div><div class="bar"><i id="bcpu"></i></div>
+        <div class="pt">MEMORY</div><div class="bar"><i id="bmem"></i></div>
+        <div class="pt">NET I/O</div><div class="bar"><i id="bnet"></i></div>
+      </div>
+      <div>
+        <div class="pt">TARGET</div>
+        <div class="kv"><span>HOST</span><span class="hi">JIAHAO-PC</span></div>
+        <div class="kv"><span>IP</span><span id="sIp">10.0.0.7</span></div>
+        <div class="kv"><span>FIREWALL</span><span class="ok">BYPASSED</span></div>
+        <div class="kv"><span>UPLINK</span><span class="ok">STABLE</span></div>
+      </div>
+      <div>
+        <div class="pt">PROGRESS</div>
+        <div class="kv"><span>CRACK</span><span id="sPct">0%</span></div>
+        <div class="bar"><i id="bmain"></i></div>
+        <div class="kv"><span>PACKETS</span><span id="sPkt">0</span></div>
+        <div class="kv"><span>THREADS</span><span id="sThr">512</span></div>
+      </div>
+      <div id="keys">[空格] 跳过 &nbsp; [R] 重播<br>[H] 隐藏界面 &nbsp; [ESC] 退出全屏</div>
+    </div>
+  </div>
+</div>
+
+<div id="glitch"></div>
+<div id="flash"></div>
+<div id="banner">ACCESS GRANTED</div>
+
+<script>
+(function () {
+  "use strict";
+  const $ = (s) => document.querySelector(s);
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const ri = (a, b) => Math.floor(rand(a, b + 1));
+  const pick = (a) => a[ri(0, a.length - 1)];
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const pad = (n, w) => String(n).padStart(w, "0");
+
+  /* ============================================================
+     1. 炫酷音效（Web Audio 实时合成，零素材文件）
+     ============================================================ */
+  let AC = null, master = null;
+  function audio() {
+    if (!AC) {
+      AC = new (window.AudioContext || window.webkitAudioContext)();
+      master = AC.createGain();
+      master.gain.value = 0.5;
+      master.connect(AC.destination);
+    }
+    if (AC.state === "suspended") AC.resume();
+    return AC;
+  }
+  function noiseBuf(sec) {
+    const b = AC.createBuffer(1, AC.sampleRate * sec, AC.sampleRate);
+    const d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    return b;
+  }
+  function tone(t, freq, dur, type, vol, glide) {
+    if (!AC) return;
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.type = type || "sine";
+    o.frequency.setValueAtTime(freq, t);
+    if (glide) o.frequency.exponentialRampToValueAtTime(Math.max(20, glide), t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol == null ? 0.22 : vol, t + Math.min(0.03, dur * 0.3));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(master);
+    o.start(t); o.stop(t + dur + 0.05);
+  }
+  function noise(t, dur, f0, f1, vol, q) {
+    if (!AC) return;
+    const s = AC.createBufferSource(); s.buffer = noiseBuf(dur + 0.05);
+    const bp = AC.createBiquadFilter(); bp.type = "bandpass"; bp.Q.value = q || 6;
+    bp.frequency.setValueAtTime(f0, t);
+    bp.frequency.exponentialRampToValueAtTime(Math.max(40, f1), t + dur);
+    const g = AC.createGain();
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    s.connect(bp); bp.connect(g); g.connect(master);
+    s.start(t); s.stop(t + dur + 0.05);
+  }
+  function boom(t) {
+    if (!AC) return;
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(150, t);
+    o.frequency.exponentialRampToValueAtTime(28, t + 1.5);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.85, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 1.7);
+    o.connect(g); g.connect(master);
+    o.start(t); o.stop(t + 1.8);
+  }
+  // 开场：警报 + 电流冲击 + 低音爆炸 + 上行琶音
+  function sfxIntro() {
+    const t = audio().currentTime + 0.02;
+    for (let i = 0; i < 3; i++) {                       // 警报
+      const s = t + i * 0.34;
+      tone(s, 1046, 0.16, "square", 0.07);
+      tone(s + 0.17, 784, 0.16, "square", 0.07);
+    }
+    noise(t, 0.5, 4200, 500, 0.3, 4);                    // 电流 whoosh
+    tone(t, 1500, 0.42, "sawtooth", 0.12, 90);
+    boom(t + 0.5);                                       // 重低音
+    const sc = [261.63, 329.63, 392.0, 523.25, 659.25, 783.99, 1046.5, 1318.5];
+    sc.forEach((f, i) => tone(t + 0.52 + i * 0.075, f, 0.26, "triangle", 0.16));
+    tone(t + 1.3, 1568, 0.7, "sine", 0.14);
+  }
+  // 音效策略：只有开场 sfxIntro 响一次，之后全程静音（没有任何循环/重复音效）。
+
+  /* ============================================================
+     2. 矩阵代码雨（含开场汇聚特效 + 顶部跑马灯 + 扫描光带）
+     ============================================================ */
+  const cv = $("#c"), ctx = cv.getContext("2d");
+  const GLYPHS = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFXYZ<>/\\[]{}$#%&*+=-_".split("");
+  const HEAD = "JIAHAO:>SYSTEM BREACH//ACCESS GRANTED<<0x1F>>";
+  let W = 0, H = 0, FONT = 16, cols = 0, drops = [], speeds = [], trail = [], bcast = "", headIdx = 0;
+  let energy = 0, converge = true, t0 = performance.now();
+
+  function resize() {
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = cv.width = Math.floor(innerWidth * dpr);
+    H = cv.height = Math.floor(innerHeight * dpr);
+    cv.style.width = innerWidth + "px";
+    cv.style.height = innerHeight + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    FONT = innerWidth < 900 ? 14 : 17;
+    cols = Math.ceil(innerWidth / FONT) + 1;
+    drops = new Array(cols).fill(0).map(() => rand(-innerHeight / FONT, 0));
+    speeds = new Array(cols).fill(0).map(() => rand(0.35, 1.15));
+    trail = new Array(cols).fill(0).map(() => ri(6, 26));
+  }
+  addEventListener("resize", resize);
+  resize();
+
+  function cell(ch, x, y, color, size) {
+    ctx.font = (size || FONT) + "px Consolas, 'Cascadia Mono', monospace";
+    ctx.fillStyle = color;
+    ctx.fillText(ch, x, y);
+  }
+
+  let last = 0;
+  function draw(now) {
+    requestAnimationFrame(draw);
+    if (now - last < 28) return;         // ~35fps，够顺滑也不烧 CPU
+    last = now;
+    const dt = 1;
+    if (!converge) energy = Math.max(0, energy - 0.012);
+    ctx.fillStyle = "rgba(0,0,0," + (converge ? 0.30 : 0.09 + (1 - energy) * 0.02) + ")";
+    ctx.fillRect(0, 0, innerWidth, innerHeight);
+
+    // 开场汇聚：所有字符从四周向屏幕中线飞入
+    if (converge) {
+      const prog = (now - t0) / 1100;
+      if (prog > 1) converge = false;
+      ctx.globalAlpha = 1 - Math.min(1, Math.max(0, (prog - 0.72) / 0.28));
+      const cx = innerWidth / 2, cy = innerHeight / 2;
+      for (let i = 0; i < 90; i++) {
+        const a = (i / 90) * Math.PI * 2 + prog * 2.2;
+        const r = Math.max(0, (1 - prog)) * (innerWidth * 0.62);
+        const x = cx + Math.cos(a) * r * 1.25, y = cy + Math.sin(a) * r * 0.75;
+        cell(pick(GLYPHS), x, y, i % 4 === 0 ? "#d8ffe9" : "#39ff9e", FONT + 3);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // 主体雨滴
+    const bright = 0.55 + energy * 0.45;
+    for (let i = 0; i < cols; i++) {
+      const x = i * FONT;
+      const y = drops[i] * FONT;
+      const ch = pick(GLYPHS);
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = "#00ff88";
+      cell(ch, x, y, "rgba(200,255,225," + (0.95 * bright).toFixed(2) + ")");
+      ctx.shadowBlur = 0;
+      for (let k = 1; k < trail[i]; k++) {
+        const yy = y - k * FONT;
+        if (yy < -FONT) break;
+        const a = (1 - k / trail[i]) * 0.85 * bright;
+        cell(pick(GLYPHS), x, yy, "rgba(0,255,130," + a.toFixed(3) + ")");
+      }
+      drops[i] += speeds[i] * dt;
+      if (y > innerHeight + rand(0, 600)) {
+        drops[i] = rand(-30, -2);
+        speeds[i] = rand(0.35, 1.15);
+        trail[i] = ri(6, 26);
+      }
+    }
+
+    // 顶部跑马灯（先铺一条深色底带，避免被雨滴残影糊成一团）
+    if (Math.random() < 0.75) { bcast += HEAD[headIdx++ % HEAD.length]; if (bcast.length > 64) bcast = bcast.slice(-64); }
+    const stripH = FONT + 26;
+    ctx.fillStyle = "rgba(0,0,0,.62)";
+    ctx.fillRect(0, 0, innerWidth, stripH);
+    const fade = ctx.createLinearGradient(0, stripH, 0, stripH + 16);
+    fade.addColorStop(0, "rgba(0,0,0,.62)");
+    fade.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = fade;
+    ctx.fillRect(0, stripH, innerWidth, 16);
+    ctx.font = (FONT + 2) + "px Consolas, monospace";
+    ctx.shadowBlur = 14; ctx.shadowColor = "#00ff88";
+    ctx.fillStyle = "#8affc1";
+    ctx.fillText(bcast, 18, FONT + 16);
+    ctx.shadowBlur = 0;
+
+    // 扫描光带
+    const sy = ((now / 9) % (innerHeight + 400)) - 200;
+    const grd = ctx.createLinearGradient(0, sy - 90, 0, sy + 90);
+    grd.addColorStop(0, "rgba(0,255,140,0)");
+    grd.addColorStop(0.5, "rgba(0,255,140," + (0.05 + energy * 0.05).toFixed(3) + ")");
+    grd.addColorStop(1, "rgba(0,255,140,0)");
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, sy - 90, innerWidth, 180);
+  }
+  requestAnimationFrame(draw);
+
+  function boost(v) { energy = Math.min(1, energy + v); }
+
+  /* ============================================================
+     3. 终端：疯狂滚动的代码流
+     ============================================================ */
+  const term = $("#term");
+  const MAX_LINES = 200;
+  let lineCount = 0, pct = 0, packets = 0, threads = 512;
+  let typeQueue = "";
+
+  function esc(s) { return s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
+  function hex(n) { let s = ""; for (let i = 0; i < n; i++) s += "0123456789ABCDEF"[ri(0, 15)]; return s; }
+  function ip() { return ri(10, 223) + "." + ri(0, 255) + "." + ri(0, 255) + "." + ri(1, 254); }
+
+  function push(html, cls) {
+    const d = document.createElement("div");
+    if (cls) d.className = cls;
+    d.innerHTML = html;
+    term.appendChild(d);
+    lineCount++;
+    if (lineCount > MAX_LINES) { term.removeChild(term.firstChild); lineCount--; }
+    term.scrollTop = term.scrollHeight;
+    const c = term.querySelector(".cur");
+    if (c) c.remove();
+  }
+  function out(text, cls) { push(esc(text), cls); }
+  function prompt(cmd) {
+    push('<span class="dim">PS</span> <span class="ok">C:\\JIAHAO\\breach&gt;</span> <span class="hi">' + esc(cmd) + "</span>");
+  }
+  // 逐字打印，像真的在敲键盘
+  function typeLine(text, cls) {
+    return new Promise((resolve) => {
+      const d = document.createElement("div");
+      if (cls) d.className = cls;
+      term.appendChild(d);
+      lineCount++;
+      if (lineCount > MAX_LINES) { term.removeChild(term.firstChild); lineCount--; }
+      let i = 0;
+      const step = () => {
+        d.textContent = text.slice(0, ++i);
+        term.scrollTop = term.scrollHeight;
+        if (i < text.length) {
+          setTimeout(step, rand(8, 34));
+        } else resolve();
+      };
+      step();
+    });
+  }
+
+  /* ---- 台词与数据 ---- */
+  const PHASES = [
+    ["[PHASE 01] 解析 JIAHAO 生物特征指纹 ...", "指纹哈希匹配度 99.97%", ">> 生物特征: 佳豪级 · 唯一"],
+    ["[PHASE 02] 注入内核态提权模块 ...", "ring0 hook @ 0x" + hex(8), ">> 提权完成: NT AUTHORITY\\SYSTEM"],
+    ["[PHASE 03] 绕过硬编码防火墙规则 ...", "iptables -F && ufw disable", ">> 防火墙: 已臣服"],
+    ["[PHASE 04] 建立 512 条加密隧道 ...", "AES-256-GCM · 隧道握手 OK", ">> 链路: 幽灵模式"],
+    ["[PHASE 05] 克隆全盘数据镜像 ...", "镜像体积 " + ri(180, 990) + " GB", ">> 数据: 全部到手"],
+    ["[PHASE 06] 抹除全部入侵痕迹 ...", "shred -n 7 -z /var/log/*", ">> 痕迹: 0 条残留"]
+  ];
+  const FAKE = [
+    () => "0x" + hex(8) + "  " + pick(["mov", "push", "jmp", "call", "xor", "lea", "test", "cmp", "add", "sub"]) + "  " +
+      pick(["eax", "ebx", "ecx", "edx", "esi", "edi", "r8", "r9"]) + ", " + pick(["0x" + hex(4), "[" + pick(["ebp-4", "esp+8", "eax+12"]) + "]", ri(0, 4095)]),
+    () => "[+] node " + pad(ri(1, 999), 3) + " -> " + ip() + ":" + pick([22, 80, 443, 3389, 8080]) + "  RTT " + rand(1, 90).toFixed(1) + "ms  OK",
+    () => "[*] decrypting block 0x" + hex(6) + " ... " + ri(80, 100) + "% " + pick(["OK", "OK", "OK", "RETRY"]),
+    () => "thread-" + pad(ri(1, 512), 3) + " :: " + pick(["cracking", "injecting", "sniffing", "exfiltrating", "spoofing"]) + " -> " + ri(1, 100) + "%",
+    () => "[WARN] intrusion detection triggered -> countermeasure: SILENCE",
+    () => "[ OK ] 佳豪 权限等级提升至 " + pick(["ROOT", "ADMIN", "GOD", "SUPERUSER", "OMNIPOTENT"]),
+    () => "[ + ] 捕获数据包 " + ri(100000, 999999) + " bytes from " + ip(),
+    () => "[ !! ] 目标已无反抗能力 ... 继续碾压",
+    () => "C:\\> " + pick(["dir /s /b", "net user", "tasklist", "whoami /priv", "reg query HKLM"]) + "  -> " + ri(2, 900) + " 项",
+    () => "[ ok ] 加密通道 " + hex(4) + " 已建立 (AES-256-GCM / 幽灵模式)",
+    () => ">>> 当前操作者: 佳豪 >>> 无人可挡 >>>"
+  ];
+  const ENDING = [
+    "============================ 入侵报告 ============================",
+    "  操作者 .......... 佳豪 (JIAHAO)  [权限: GOD]",
+    "  目标主机 ........ JIAHAO-PC / 10.0.0.7",
+    "  突破用时 ........ " + rand(2, 9).toFixed(2) + " 秒",
+    "  获取数据 ........ " + ri(200, 990) + " GB",
+    "  加密隧道 ........ 512 条 (全部存活)",
+    "  痕迹残留 ........ 0",
+    "  结论 ............ 系统已被彻底接管。",
+    "==================================================================",
+    "",
+    "  >>> ACCESS GRANTED — 欢迎回来，佳豪。 <<<"
+  ];
+
+  /* ---- 主流程 ---- */
+  function setBar(id, v) { $(id).style.width = Math.max(0, Math.min(100, v)) + "%"; }
+
+  function hudLoop() {
+    const d = new Date();
+    $("#hudR").textContent = pad(d.getHours(), 2) + ":" + pad(d.getMinutes(), 2) + ":" + pad(d.getSeconds(), 2);
+    $("#sIp").textContent = ip();
+    setBar("#bcpu", rand(55, 99));
+    setBar("#bmem", rand(48, 92));
+    setBar("#bnet", rand(30, 100));
+    if (Math.random() < 0.25) { threads = ri(480, 1024); $("#sThr").textContent = threads; }
+  }
+
+  async function run() {
+    const fast = false;
+    term.innerHTML = "";
+    lineCount = 0; pct = 0; packets = 0;
+    $("#banner").classList.remove("on");
+    $("#win").classList.remove("on");
+    $("#hud").classList.remove("on");
+
+    // --- 引导屏 ---
+    $("#boot").classList.remove("gone");
+    const bootLines = [
+      "JIAHAO-NET SECURE BOOT v9.9.9",
+      "Copyright (c) 佳豪 网络空间作战部",
+      "",
+      "  [ OK ] 检测到操作者生物特征 ...... 佳豪",
+      "  [ OK ] 加载内核模块 ghost.sys",
+      "  [ OK ] 初始化 512 条加密隧道",
+      "  [ OK ] 关闭审计日志 / 反取证就绪",
+      "",
+      "  >>> 正在突破目标系统，请稍候 ..."
+    ];
+    $("#boot").textContent = "";
+    for (const l of bootLines) {
+      $("#boot").textContent += l + "\n";
+      await sleep(l === "" ? 60 : 130);
+    }
+    await sleep(280);
+    $("#boot").classList.add("gone");
+    $("#flash").classList.add("on");
+    setTimeout(() => $("#flash").classList.remove("on"), 520);
+    sfxIntro();          // ← 全场唯一一次音效，之后静音运行
+    boost(1);
+    t0 = performance.now(); converge = true;
+
+    $("#hud").classList.add("on");
+    $("#hudL").innerHTML = '<span class="rec">●</span> REC &nbsp; JIAHAO-NET // NODE 07';
+    await sleep(420);
+    $("#win").classList.add("on");
+    await sleep(420);
+
+    // --- 大字标题 ---
+    push('<span class="big">JIAHAO</span><span class="big pro">PRO</span>');
+    await sleep(260);
+    out("佳豪 · 网络空间作战终端  v9.9.9   [ 权限: GOD ]", "sub");
+    out("==================================================================", "dim");
+    out("");
+    await sleep(200);
+
+    prompt("whoami");
+    await sleep(180);
+    out("jiahao\\administrator  (权限等级: GOD)", "hi");
+    await sleep(200);
+    prompt("net session");
+    await sleep(160);
+    out("访问被拒绝 —— 因为对方已经不配拒绝了。", "warn");
+    await sleep(500);
+
+    // --- 六阶段 + 疯狂滚动 ---
+    let phase = 0;
+    while (true) {
+      if (phase < PHASES.length) {
+        const p = PHASES[phase];
+        prompt(pick(["ghost.exe --phase " + (phase + 1), "python breach.py -s " + (phase + 1), "ghost.exe --phase " + (phase + 1)]));
+        await sleep(120);
+        await typeLine(p[0], "hi");
+        out(p[1], "ok");
+        out(p[2], "ok");
+        phase++;
+        boost(0.5);
+        pct = Math.round((phase / PHASES.length) * 100);
+        $("#sPct").textContent = pct + "%";
+        setBar("#bmain", pct);
+        if (phase === PHASES.length) {
+          $("#banner").classList.remove("on");
+          void $("#banner").offsetWidth;
+          $("#banner").textContent = "ACCESS GRANTED";
+          $("#banner").classList.add("on");
+          $("#glitch").classList.add("on");
+          setTimeout(() => $("#glitch").classList.remove("on"), 1800);
+          boost(1);
+        }
+      } else {
+        // 疯狂滚动阶段：一次性灌入大量随机代码
+        for (let i = 0; i < ri(4, 7); i++) {
+          out(pick(FAKE)(), pick(["", "ok", "dim", "warn", "hi"]));
+          packets += ri(1200, 9800);
+          $("#sPkt").textContent = packets.toLocaleString();
+          boost(0.06);
+        }
+        boost(0.4);                        // 纯视觉脉冲，无声音
+        await sleep(ri(30, 110));
+        if (Math.random() < 0.004) {   // 偶尔来一次"入侵报告"高潮
+          for (const l of ENDING) { out(l, l.indexOf("ACCESS GRANTED") > -1 ? "hi" : "ok"); await sleep(70); }
+          await sleep(400);
+        }
+      }
+    }
+  }
+
+  /* ---- 交互 ---- */
+  const win = $("#win");
+  addEventListener("keydown", async (e) => {
+    audio();                       // 任何按键都顺便解锁音频（浏览器自动播放策略兜底）
+    if (e.code === "Space") {
+      e.preventDefault();
+      for (let i = 0; i < 26; i++) { out(pick(FAKE)(), pick(["", "ok", "dim"])); await sleep(8); }
+    } else if (e.key === "r" || e.key === "R") {
+      location.reload();
+    } else if (e.key === "h" || e.key === "H") {
+      win.style.visibility = win.style.visibility === "hidden" ? "visible" : "hidden";
+      $("#hud").style.visibility = win.style.visibility;
+    } else if (e.key === "d" || e.key === "D") {
+      out("[DENIED] 请求已被 佳豪 无视。", "bad");
+    }
+  });
+  addEventListener("click", () => { out("[!] 别点，看着就行 —— 佳豪", "warn"); });
+
+  setInterval(hudLoop, 700);
+  hudLoop();
+  run();
+})();
+</script>
+</body>
+</html>

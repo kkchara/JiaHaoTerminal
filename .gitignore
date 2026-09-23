@@ -1,0 +1,28 @@
+# ---- 临时 / 调试产物 ----
+_diag.*
+_look*.png
+_shot_*.png
+_live*.png
+_final.png
+_verify.png
+_dryrun.bat
+*.tmp
+*.log
+
+# ---- 编译中间产物 ----
+*.pdb
+*.obj
+
+# 注意：exe/JiahaoBreach.exe 是刻意入库的。
+# 这个项目的定位就是"双击即用、不依赖浏览器"，36 KB 的体积换来 clone 下来即可运行。
+# 若你更希望它作为纯构建产物，取消下面这行的注释即可。
+# exe/JiahaoBreach.exe
+
+# ---- 编辑器 / 系统 ----
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+Thumbs.db
+desktop.ini

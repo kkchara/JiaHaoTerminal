@@ -1,0 +1,28 @@
+# 换行符策略：让仓库在任何平台、任何 autocrlf 设置下都检出一致的结果。
+#
+# 背景：Windows 批处理（.bat）用 LF 行尾时，cmd.exe 会在 for/if 括号块里解析错乱。
+# 所以 .bat 必须强制 CRLF，否则别人克隆下来双击就是一堆语法错误。
+
+# 批处理：必须 CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# PowerShell / C#：Windows 原生工具链，统一 CRLF 最省心
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf
+*.cs  text eol=crlf
+
+# 文档与前端：LF 即可，跨平台友好
+*.md   text eol=lf
+*.html text eol=lf
+*.css  text eol=lf
+*.js   text eol=lf
+*.json text eol=lf
+*.txt  text eol=lf
+
+# 二进制：不要做任何换行符转换
+*.exe  binary
+*.png  binary
+*.jpg  binary
+*.ico  binary
+*.zip  binary
