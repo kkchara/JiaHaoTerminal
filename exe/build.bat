@@ -1,6 +1,6 @@
 @echo off
 setlocal
-title JIAHAO // BUILD
+title JiaHao // BUILD
 
 rem Compiles with the C# compiler that ships with Windows.
 rem No Visual Studio or .NET SDK required.
@@ -10,14 +10,14 @@ set "CSC=%WINDIR%\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
 if not exist "%CSC%" set "CSC=%WINDIR%\Microsoft.NET\Framework\v4.0.30319\csc.exe"
 if not exist "%CSC%" goto :nocsc
 
-set "SRC=%~dp0src\JiahaoBreach.cs"
-set "OUT=%~dp0JiahaoBreach.exe"
+set "SRC=%~dp0src\JiaHaoBreach.cs"
+set "OUT=%~dp0JiaHaoBreach.exe"
 
 if not exist "%SRC%" goto :nosrc
 
 echo.
 echo   ============================================
-echo    JIAHAO-NET  //  BUILD
+echo    JiaHao-NET  //  BUILD
 echo   ============================================
 echo    compiler : %CSC%
 echo    source   : %SRC%
@@ -33,7 +33,7 @@ if errorlevel 1 goto :failed
 echo   [ OK ] Build succeeded.
 for %%A in ("%OUT%") do echo          size: %%~zA bytes
 echo.
-echo   Double-click JiahaoBreach.exe to run.
+echo   Double-click JiaHaoBreach.exe to run.
 pause
 exit /b 0
 

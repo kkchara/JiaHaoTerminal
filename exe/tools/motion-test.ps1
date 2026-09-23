@@ -1,9 +1,9 @@
 # 定点运动检测：只采代码雨区域，连续对比相邻帧的像素差异
 # 代码雨是持续下落的，若画面正常，相邻帧必然有大量像素变化
 # 用法: pwsh -File motion-test.ps1 [-Exe <path>] [-Seconds 20]
-# 默认使用本脚本上一级目录里的 JiahaoBreach.exe，因此整个项目可以随意挪动
+# 默认使用本脚本上一级目录里的 JiaHaoBreach.exe，因此整个项目可以随意挪动
 param(
-    [string]$Exe = (Join-Path (Split-Path $PSScriptRoot -Parent) "JiahaoBreach.exe"),
+    [string]$Exe = (Join-Path (Split-Path $PSScriptRoot -Parent) "JiaHaoBreach.exe"),
     [int]$Seconds = 20,
     [int]$WarmupSec = 6
 )

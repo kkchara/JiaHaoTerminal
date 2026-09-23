@@ -1,4 +1,4 @@
-# 佳豪 · 黑客帝国装逼终端 —— 网页版
+# 嘉豪 · 黑客帝国装逼终端 —— 网页版
 
 **双击 `start.bat`** 即可。自动用 Chrome/Edge 以 kiosk 全屏模式打开 `index.html`，音效自动播放。
 
@@ -45,8 +45,8 @@ web/
 
 | 想改什么 | 找哪里 |
 |---|---|
-| 名字 / 主机名 | `JIAHAO`、`JIAHAO-PC`、`jiahao\administrator` |
-| 大字标题 | `push('<span class="big">JIAHAO</span>...')` |
+| 名字 / 主机名 | `JiaHao`、`JiaHao-PC`、`JiaHao\administrator` |
+| 大字标题 | `push('<span class="big">JiaHao</span>...')` |
 | 终端里滚的假代码 | `const FAKE = [...]` 数组，随便加 |
 | 六阶段台词 | `const PHASES = [...]` |
 | 结尾报告 | `const ENDING = [...]` |

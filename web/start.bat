@@ -1,6 +1,6 @@
 @echo off
 setlocal
-title JIAHAO // LAUNCHER
+title JiaHao // LAUNCHER
 
 set "PAGE=%~dp0index.html"
 if not exist "%PAGE%" goto :nofile
@@ -22,7 +22,7 @@ if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" set "EDGE=%
 
 echo.
 echo   ============================================
-echo    JIAHAO-NET  //  BREACH CONSOLE   v9.9.9
+echo    JiaHao-NET  //  BREACH CONSOLE   v9.9.9
 echo   ============================================
 echo    file : %PAGE%
 echo    exit : ESC leaves fullscreen  ^|  Alt+F4 closes

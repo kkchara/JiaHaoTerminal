@@ -1,6 +1,6 @@
 // ============================================================
-//  佳豪 · 黑客帝国装逼终端  —  原生 Win32/.NET 版（无浏览器）
-//  编译: csc.exe /target:winexe /out:JiahaoBreach.exe JiahaoBreach.cs
+//  嘉豪 · 黑客帝国装逼终端  —  原生 Win32/.NET 版（无浏览器）
+//  编译: csc.exe /target:winexe /out:JiaHaoBreach.exe JiaHaoBreach.cs
 //  依赖: 仅 .NET Framework 4.x 自带程序集，Windows 10/11 开箱即用
 // ============================================================
 using System;
@@ -14,7 +14,7 @@ using System.Media;
 using System.Text;
 using System.Windows.Forms;
 
-namespace JiahaoBreach
+namespace JiaHaoBreach
 {
     static class Program
     {
@@ -226,7 +226,7 @@ namespace JiahaoBreach
             // 曾经这里用 CreateGraphics() 直接画窗口 DC —— 那样系统双缓冲会把空的后台缓冲贴上来盖掉画面，导致持续闪黑。
             SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint
                    | ControlStyles.OptimizedDoubleBuffer | ControlStyles.Opaque, true);
-            Text = "JIAHAO // SYSTEM BREACH";
+            Text = "JiaHao // SYSTEM BREACH";
 
             monoFamily = PickFamily(new string[] { "Consolas", "Cascadia Mono", "Courier New" }, FontFamily.GenericMonospace);
             fMono = new Font(monoFamily, 12.5f, FontStyle.Regular);
@@ -313,10 +313,10 @@ namespace JiahaoBreach
         void BuildBoot()
         {
             bootLines = new string[] {
-                "JIAHAO-NET SECURE BOOT v9.9.9",
-                "Copyright (c) 佳豪 网络空间作战部",
+                "JiaHao-NET SECURE BOOT v9.9.9",
+                "Copyright (c) 嘉豪 网络空间作战部",
                 "",
-                "  [ OK ] 检测到操作者生物特征 ...... 佳豪",
+                "  [ OK ] 检测到操作者生物特征 ...... 嘉豪",
                 "  [ OK ] 加载内核模块 ghost.sys",
                 "  [ OK ] 初始化 512 条加密隧道",
                 "  [ OK ] 关闭审计日志 / 反取证就绪",
@@ -326,7 +326,7 @@ namespace JiahaoBreach
         }
 
         static readonly string[][] PHASES = new string[][] {
-            new string[] { "[PHASE 01] 解析 JIAHAO 生物特征指纹 ...", "指纹哈希匹配度 99.97%", ">> 生物特征: 佳豪级 · 唯一" },
+            new string[] { "[PHASE 01] 解析 JiaHao 生物特征指纹 ...", "指纹哈希匹配度 99.97%", ">> 生物特征: 嘉豪级 · 唯一" },
             new string[] { "[PHASE 02] 注入内核态提权模块 ...", "ring0 hook @ 0x7A3F91C2", ">> 提权完成: NT AUTHORITY\\SYSTEM" },
             new string[] { "[PHASE 03] 绕过硬编码防火墙规则 ...", "iptables -F && ufw disable", ">> 防火墙: 已臣服" },
             new string[] { "[PHASE 04] 建立 512 条加密隧道 ...", "AES-256-GCM · 隧道握手 OK", ">> 链路: 幽灵模式" },
@@ -358,7 +358,7 @@ namespace JiahaoBreach
                 case 4:
                     return "[WARN] intrusion detection triggered -> countermeasure: SILENCE";
                 case 5:
-                    return "[ OK ] 佳豪 权限等级提升至 " + Pick(new string[] { "ROOT", "ADMIN", "GOD", "SUPERUSER", "OMNIPOTENT" });
+                    return "[ OK ] 嘉豪 权限等级提升至 " + Pick(new string[] { "ROOT", "ADMIN", "GOD", "SUPERUSER", "OMNIPOTENT" });
                 case 6:
                     return "[ + ] 捕获数据包 " + Ri(100000, 999999) + " bytes from " + Ip();
                 case 7:
@@ -368,7 +368,7 @@ namespace JiahaoBreach
                 case 9:
                     return "[ ok ] 加密通道 " + Hex(4) + " 已建立 (AES-256-GCM / 幽灵模式)";
                 default:
-                    return ">>> 当前操作者: 佳豪 >>> 无人可挡 >>>";
+                    return ">>> 当前操作者: 嘉豪 >>> 无人可挡 >>>";
             }
         }
 
@@ -377,8 +377,8 @@ namespace JiahaoBreach
 
         static readonly string[] ENDING = new string[] {
             "============================ 入侵报告 ============================",
-            "  操作者 .......... 佳豪 (JIAHAO)  [权限: GOD]",
-            "  目标主机 ........ JIAHAO-PC / 10.0.0.7",
+            "  操作者 .......... 嘉豪 (JiaHao)  [权限: GOD]",
+            "  目标主机 ........ JiaHao-PC / 10.0.0.7",
             "  突破用时 ........ 4.21 秒",
             "  获取数据 ........ 742 GB",
             "  加密隧道 ........ 512 条 (全部存活)",
@@ -386,7 +386,7 @@ namespace JiahaoBreach
             "  结论 ............ 系统已被彻底接管。",
             "==================================================================",
             "",
-            "  >>> ACCESS GRANTED — 欢迎回来，佳豪。 <<<"
+            "  >>> ACCESS GRANTED — 欢迎回来，嘉豪。 <<<"
         };
 
         void BuildScript()
@@ -395,7 +395,7 @@ namespace JiahaoBreach
             Action<double, Action> at = delegate(double d, Action a) { t += d; Step s = new Step(); s.At = t; s.Act = a; steps.Add(s); };
 
             at(0.00, delegate { Prompt("whoami"); });
-            at(0.30, delegate { Out("jiahao\\administrator  (权限等级: GOD)", ColHi); });
+            at(0.30, delegate { Out("JiaHao\\administrator  (权限等级: GOD)", ColHi); });
             at(0.35, delegate { Prompt("net session"); });
             at(0.30, delegate { Out("访问被拒绝 —— 因为对方已经不配拒绝了。", ColWarn); });
             at(0.60, delegate { });
@@ -450,7 +450,7 @@ namespace JiahaoBreach
         void Prompt(string cmd)
         {
             Line l = new Line();
-            l.Text = "PS  C:\\JIAHAO\\breach> " + cmd;
+            l.Text = "PS  C:\\JiaHao\\breach> " + cmd;
             l.Col = ColHi; l.Fnt = fMonoB; Push(l);
         }
         void Type(string s, Color c)
@@ -501,7 +501,7 @@ namespace JiahaoBreach
         // ============================================================
         //  主循环
         // ============================================================
-        static readonly string LogPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "jiahao_debug.log");
+        static readonly string LogPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "JiaHao_debug.log");
         public static void Log(string s)
         {
             try { System.IO.File.AppendAllText(LogPath, DateTime.Now.ToString("HH:mm:ss.fff") + "  " + s + "\r\n"); } catch { }
@@ -956,7 +956,7 @@ namespace JiahaoBreach
 
         void DrawLogo(Graphics g, float x, float y)
         {
-            string a = "JIAHAO", b = "PRO";
+            string a = "JiaHao", b = "PRO";
             for (int r = 8; r >= 2; r -= 2)
             {
                 using (SolidBrush br = new SolidBrush(Color.FromArgb(16, 0, 255, 136)))
@@ -998,7 +998,7 @@ namespace JiahaoBreach
 
             using (SolidBrush b = new SolidBrush(ColDim)) g.DrawString("TARGET", fTiny, b, x, cy);
             cy += 15;
-            cy = Kv(g, x, cy, w, "HOST", "JIAHAO-PC", ColHi);
+            cy = Kv(g, x, cy, w, "HOST", "JiaHao-PC", ColHi);
             cy = Kv(g, x, cy, w, "IP", "10.0.0.7", ColHi);
             cy = Kv(g, x, cy, w, "FIREWALL", "BYPASSED", ColOk);
             cy = Kv(g, x, cy, w, "UPLINK", "STABLE", ColOk);
@@ -1090,7 +1090,7 @@ namespace JiahaoBreach
         string hudClock = "--:--:--";
         void DrawHud(Graphics g, int W, int H)
         {
-            string left = "● REC   JIAHAO-NET // NODE 07";
+            string left = "● REC   JiaHao-NET // NODE 07";
             string mid = "UPLINK ENCRYPTED · AES-256-GCM";
             string right = hudClock;      // 每秒更新一次，不必每帧格式化
             float by = H - 30;
@@ -1138,7 +1138,7 @@ namespace JiahaoBreach
 
         protected override void OnMouseClick(MouseEventArgs e)
         {
-            Out("[!] 别点，看着就行 —— 佳豪", ColWarn);
+            Out("[!] 别点，看着就行 —— 嘉豪", ColWarn);
             base.OnMouseClick(e);
         }
     }

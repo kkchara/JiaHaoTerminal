@@ -1,6 +1,6 @@
-# 佳豪 · 黑客帝国装逼终端 —— 原生 exe 版
+# 嘉豪 · 黑客帝国装逼终端 —— 原生 exe 版
 
-**双击 `JiahaoBreach.exe`** 即可。全屏、置顶、无边框，音效自动播放。
+**双击 `JiaHaoBreach.exe`** 即可。全屏、置顶、无边框，音效自动播放。
 
 - 纯 .NET Framework 4.x + Win32，**Windows 10/11 自带运行时，不用装任何东西**
 - 不联网、不写注册表、不碰系统文件，就是个全屏动画窗口
@@ -22,10 +22,10 @@
 
 ```
 exe/
-├─ JiahaoBreach.exe       编译产物，直接双击运行
+├─ JiaHaoBreach.exe       编译产物，直接双击运行
 ├─ build.bat              一键重新编译（用 Windows 自带的 csc.exe）
 ├─ src/
-│  └─ JiahaoBreach.cs     全部源码，单文件
+│  └─ JiaHaoBreach.cs     全部源码，单文件
 └─ tools/
    ├─ flicker-test.ps1    闪屏自检
    └─ motion-test.ps1     运动自检
@@ -40,18 +40,18 @@ exe/
 ```bat
 C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe /target:winexe /codepage:65001 /optimize+ ^
   /reference:System.dll /reference:System.Drawing.dll /reference:System.Windows.Forms.dll ^
-  /out:JiahaoBreach.exe src\JiahaoBreach.cs
+  /out:JiaHaoBreach.exe src\JiaHaoBreach.cs
 ```
 
 > `/codepage:65001` 必须加，否则源码里的中文会变乱码。
 
 ## 想改内容
 
-编辑 `src\JiahaoBreach.cs` 后重新编译：
+编辑 `src\JiaHaoBreach.cs` 后重新编译：
 
 | 想改什么 | 找哪里 |
 |---|---|
-| 名字 / 主机名 | `JIAHAO`、`JIAHAO-PC`、`jiahao\administrator` |
+| 名字 / 主机名 | `JiaHao`、`JiaHao-PC`、`JiaHao\administrator` |
 | 六阶段台词 | `static readonly string[][] PHASES` |
 | 滚动的假代码 | `string FakeLine()` |
 | 结尾报告 | `static readonly string[] ENDING` |
@@ -75,14 +75,14 @@ pwsh -File tools\flicker-test.ps1 -Seconds 25
 pwsh -File tools\motion-test.ps1 -Seconds 18
 ```
 
-两个脚本默认使用上一级目录的 `JiahaoBreach.exe`，所以整个项目可以随意挪动。
+两个脚本默认使用上一级目录的 `JiaHaoBreach.exe`，所以整个项目可以随意挪动。
 
 ## 诊断模式
 
 程序内置了诊断模式，用来量化资源与性能（正常使用不需要）：
 
 ```powershell
-.\JiahaoBreach.exe --diag D:\diag.txt 60
+.\JiaHaoBreach.exe --diag D:\diag.txt 60
 ```
 
 每秒记录一行，读法：

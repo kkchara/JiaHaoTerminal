@@ -1,8 +1,8 @@
 # 闪屏检测：高频采样真实屏幕，统计"全黑帧"与"帧间变化"
 # 用法: pwsh -File flicker-test.ps1 [-Exe <path>] [-Seconds 25]
-# 默认使用本脚本上一级目录里的 JiahaoBreach.exe，因此整个项目可以随意挪动
+# 默认使用本脚本上一级目录里的 JiaHaoBreach.exe，因此整个项目可以随意挪动
 param(
-    [string]$Exe = (Join-Path (Split-Path $PSScriptRoot -Parent) "JiahaoBreach.exe"),
+    [string]$Exe = (Join-Path (Split-Path $PSScriptRoot -Parent) "JiaHaoBreach.exe"),
     [int]$Seconds = 25,
     [int]$WarmupSec = 5
 )

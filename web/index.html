@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>JIAHAO // SYSTEM BREACH</title>
+<title>JiaHao // SYSTEM BREACH</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{width:100%;height:100%;overflow:hidden;background:#000;cursor:none}
@@ -99,7 +99,7 @@
 
 <div id="boot"></div>
 
-<div id="hud" class="top"><span id="hudL">● REC &nbsp; JIAHAO-NET // NODE 07</span><span id="hudC">UPLINK ENCRYPTED · AES-256-GCM</span><span id="hudR">--:--:--</span></div>
+<div id="hud" class="top"><span id="hudL">● REC &nbsp; JiaHao-NET // NODE 07</span><span id="hudC">UPLINK ENCRYPTED · AES-256-GCM</span><span id="hudR">--:--:--</span></div>
 
 <div id="win">
   <div id="bar">
@@ -118,7 +118,7 @@
       </div>
       <div>
         <div class="pt">TARGET</div>
-        <div class="kv"><span>HOST</span><span class="hi">JIAHAO-PC</span></div>
+        <div class="kv"><span>HOST</span><span class="hi">JiaHao-PC</span></div>
         <div class="kv"><span>IP</span><span id="sIp">10.0.0.7</span></div>
         <div class="kv"><span>FIREWALL</span><span class="ok">BYPASSED</span></div>
         <div class="kv"><span>UPLINK</span><span class="ok">STABLE</span></div>
@@ -227,7 +227,7 @@
      ============================================================ */
   const cv = $("#c"), ctx = cv.getContext("2d");
   const GLYPHS = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFXYZ<>/\\[]{}$#%&*+=-_".split("");
-  const HEAD = "JIAHAO:>SYSTEM BREACH//ACCESS GRANTED<<0x1F>>";
+  const HEAD = "JiaHao:>SYSTEM BREACH//ACCESS GRANTED<<0x1F>>";
   let W = 0, H = 0, FONT = 16, cols = 0, drops = [], speeds = [], trail = [], bcast = "", headIdx = 0;
   let energy = 0, converge = true, t0 = performance.now();
 
@@ -356,7 +356,7 @@
   }
   function out(text, cls) { push(esc(text), cls); }
   function prompt(cmd) {
-    push('<span class="dim">PS</span> <span class="ok">C:\\JIAHAO\\breach&gt;</span> <span class="hi">' + esc(cmd) + "</span>");
+    push('<span class="dim">PS</span> <span class="ok">C:\\JiaHao\\breach&gt;</span> <span class="hi">' + esc(cmd) + "</span>");
   }
   // 逐字打印，像真的在敲键盘
   function typeLine(text, cls) {
@@ -380,7 +380,7 @@
 
   /* ---- 台词与数据 ---- */
   const PHASES = [
-    ["[PHASE 01] 解析 JIAHAO 生物特征指纹 ...", "指纹哈希匹配度 99.97%", ">> 生物特征: 佳豪级 · 唯一"],
+    ["[PHASE 01] 解析 JiaHao 生物特征指纹 ...", "指纹哈希匹配度 99.97%", ">> 生物特征: 嘉豪级 · 唯一"],
     ["[PHASE 02] 注入内核态提权模块 ...", "ring0 hook @ 0x" + hex(8), ">> 提权完成: NT AUTHORITY\\SYSTEM"],
     ["[PHASE 03] 绕过硬编码防火墙规则 ...", "iptables -F && ufw disable", ">> 防火墙: 已臣服"],
     ["[PHASE 04] 建立 512 条加密隧道 ...", "AES-256-GCM · 隧道握手 OK", ">> 链路: 幽灵模式"],
@@ -394,17 +394,17 @@
     () => "[*] decrypting block 0x" + hex(6) + " ... " + ri(80, 100) + "% " + pick(["OK", "OK", "OK", "RETRY"]),
     () => "thread-" + pad(ri(1, 512), 3) + " :: " + pick(["cracking", "injecting", "sniffing", "exfiltrating", "spoofing"]) + " -> " + ri(1, 100) + "%",
     () => "[WARN] intrusion detection triggered -> countermeasure: SILENCE",
-    () => "[ OK ] 佳豪 权限等级提升至 " + pick(["ROOT", "ADMIN", "GOD", "SUPERUSER", "OMNIPOTENT"]),
+    () => "[ OK ] 嘉豪 权限等级提升至 " + pick(["ROOT", "ADMIN", "GOD", "SUPERUSER", "OMNIPOTENT"]),
     () => "[ + ] 捕获数据包 " + ri(100000, 999999) + " bytes from " + ip(),
     () => "[ !! ] 目标已无反抗能力 ... 继续碾压",
     () => "C:\\> " + pick(["dir /s /b", "net user", "tasklist", "whoami /priv", "reg query HKLM"]) + "  -> " + ri(2, 900) + " 项",
     () => "[ ok ] 加密通道 " + hex(4) + " 已建立 (AES-256-GCM / 幽灵模式)",
-    () => ">>> 当前操作者: 佳豪 >>> 无人可挡 >>>"
+    () => ">>> 当前操作者: 嘉豪 >>> 无人可挡 >>>"
   ];
   const ENDING = [
     "============================ 入侵报告 ============================",
-    "  操作者 .......... 佳豪 (JIAHAO)  [权限: GOD]",
-    "  目标主机 ........ JIAHAO-PC / 10.0.0.7",
+    "  操作者 .......... 嘉豪 (JiaHao)  [权限: GOD]",
+    "  目标主机 ........ JiaHao-PC / 10.0.0.7",
     "  突破用时 ........ " + rand(2, 9).toFixed(2) + " 秒",
     "  获取数据 ........ " + ri(200, 990) + " GB",
     "  加密隧道 ........ 512 条 (全部存活)",
@@ -412,7 +412,7 @@
     "  结论 ............ 系统已被彻底接管。",
     "==================================================================",
     "",
-    "  >>> ACCESS GRANTED — 欢迎回来，佳豪。 <<<"
+    "  >>> ACCESS GRANTED — 欢迎回来，嘉豪。 <<<"
   ];
 
   /* ---- 主流程 ---- */
@@ -439,10 +439,10 @@
     // --- 引导屏 ---
     $("#boot").classList.remove("gone");
     const bootLines = [
-      "JIAHAO-NET SECURE BOOT v9.9.9",
-      "Copyright (c) 佳豪 网络空间作战部",
+      "JiaHao-NET SECURE BOOT v9.9.9",
+      "Copyright (c) 嘉豪 网络空间作战部",
       "",
-      "  [ OK ] 检测到操作者生物特征 ...... 佳豪",
+      "  [ OK ] 检测到操作者生物特征 ...... 嘉豪",
       "  [ OK ] 加载内核模块 ghost.sys",
       "  [ OK ] 初始化 512 条加密隧道",
       "  [ OK ] 关闭审计日志 / 反取证就绪",
@@ -463,22 +463,22 @@
     t0 = performance.now(); converge = true;
 
     $("#hud").classList.add("on");
-    $("#hudL").innerHTML = '<span class="rec">●</span> REC &nbsp; JIAHAO-NET // NODE 07';
+    $("#hudL").innerHTML = '<span class="rec">●</span> REC &nbsp; JiaHao-NET // NODE 07';
     await sleep(420);
     $("#win").classList.add("on");
     await sleep(420);
 
     // --- 大字标题 ---
-    push('<span class="big">JIAHAO</span><span class="big pro">PRO</span>');
+    push('<span class="big">JiaHao</span><span class="big pro">PRO</span>');
     await sleep(260);
-    out("佳豪 · 网络空间作战终端  v9.9.9   [ 权限: GOD ]", "sub");
+    out("嘉豪 · 网络空间作战终端  v9.9.9   [ 权限: GOD ]", "sub");
     out("==================================================================", "dim");
     out("");
     await sleep(200);
 
     prompt("whoami");
     await sleep(180);
-    out("jiahao\\administrator  (权限等级: GOD)", "hi");
+    out("JiaHao\\administrator  (权限等级: GOD)", "hi");
     await sleep(200);
     prompt("net session");
     await sleep(160);
@@ -540,10 +540,10 @@
       win.style.visibility = win.style.visibility === "hidden" ? "visible" : "hidden";
       $("#hud").style.visibility = win.style.visibility;
     } else if (e.key === "d" || e.key === "D") {
-      out("[DENIED] 请求已被 佳豪 无视。", "bad");
+      out("[DENIED] 请求已被 嘉豪 无视。", "bad");
     }
   });
-  addEventListener("click", () => { out("[!] 别点，看着就行 —— 佳豪", "warn"); });
+  addEventListener("click", () => { out("[!] 别点，看着就行 —— 嘉豪", "warn"); });
 
   setInterval(hudLoop, 700);
   hudLoop();
